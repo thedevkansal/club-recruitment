@@ -1,122 +1,131 @@
 // src/pages/ClubsPage.jsx
-import React, { useState, useMemo } from 'react';
-import { Search, Instagram, ExternalLink } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState, useMemo } from "react";
+import { Search, Instagram, ExternalLink } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const ClubsPage = () => {
   const { user } = useAuth();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const navigate = useNavigate();
 
   const clubs = [
     {
       id: 1,
       name: "Coding",
       shortName: "CC",
-      description: "For all students passionate about software development and technology.",
+      description:
+        "For all students passionate about software development and technology.",
       category: "Tech",
       instagramUrl: "https://instagram.com/codingclub",
       memberCount: 120,
-      logo: "https://source.unsplash.com/random/200x200?code"
+      logo: "https://source.unsplash.com/random/200x200?code",
     },
     {
       id: 2,
       name: "Design Hub",
       shortName: "DH",
-      description: "A place for designers to collaborate, learn, and create stunning visuals.",
+      description:
+        "A place for designers to collaborate, learn, and create stunning visuals.",
       category: "Creative",
       instagramUrl: "https://instagram.com/designhub",
       memberCount: 85,
-      logo: "https://source.unsplash.com/random/200x200?design"
+      logo: "https://source.unsplash.com/random/200x200?design",
     },
     {
       id: 3,
       name: "Entrepreneurship",
       shortName: "ES",
-      description: "Connect with aspiring entrepreneurs and build the next big thing.",
+      description:
+        "Connect with aspiring entrepreneurs and build the next big thing.",
       category: "Business",
       instagramUrl: "https://instagram.com/entrepreneursoc",
       memberCount: 95,
-      logo: "https://source.unsplash.com/random/200x200?startup"
+      logo: "https://source.unsplash.com/random/200x200?startup",
     },
     {
       id: 4,
       name: "Photography",
       shortName: "PC",
-      description: "Capture the world through your lens. All skill levels welcome.",
+      description:
+        "Capture the world through your lens. All skill levels welcome.",
       category: "Creative",
       instagramUrl: "https://instagram.com/photoclub",
       memberCount: 60,
-      logo: "https://source.unsplash.com/random/200x200?camera"
+      logo: "https://source.unsplash.com/random/200x200?camera",
     },
     {
       id: 5,
       name: "Music",
       shortName: "MS",
-      description: "Harmonizing melodies and creating unforgettable musical experiences.",
+      description:
+        "Harmonizing melodies and creating unforgettable musical experiences.",
       category: "Creative",
       instagramUrl: "https://instagram.com/musicsociety",
       memberCount: 75,
-      logo: "https://source.unsplash.com/random/200x200?music"
+      logo: "https://source.unsplash.com/random/200x200?music",
     },
     {
       id: 6,
       name: "Data Science",
       shortName: "DS",
-      description: "Exploring the world of data analytics, ML, and artificial intelligence.",
+      description:
+        "Exploring the world of data analytics, ML, and artificial intelligence.",
       category: "Tech",
       instagramUrl: "https://instagram.com/datascienceclub",
       memberCount: 90,
-      logo: "https://source.unsplash.com/random/200x200?data"
+      logo: "https://source.unsplash.com/random/200x200?data",
     },
     {
       id: 7,
       name: "Debate",
       shortName: "DB",
-      description: "Enhancing communication skills and critical thinking through debates.",
+      description:
+        "Enhancing communication skills and critical thinking through debates.",
       category: "Academic",
       instagramUrl: "https://instagram.com/debatesociety",
       memberCount: 55,
-      logo: "https://source.unsplash.com/random/200x200?speech"
+      logo: "https://source.unsplash.com/random/200x200?speech",
     },
     {
       id: 8,
       name: "Robotics",
       shortName: "RC",
-      description: "Building the future through innovative robotics and automation.",
+      description:
+        "Building the future through innovative robotics and automation.",
       category: "Tech",
       instagramUrl: "https://instagram.com/roboticsclub",
       memberCount: 65,
-      logo: "https://source.unsplash.com/random/200x200?robot"
-    }
+      logo: "https://source.unsplash.com/random/200x200?robot",
+    },
   ];
 
-  const categories = ['All', 'Tech', 'Creative', 'Business', 'Academic'];
+  const categories = ["All", "Tech", "Creative", "Business", "Academic"];
 
   const filteredClubs = useMemo(() => {
-    return clubs.filter(club => {
+    return clubs.filter((club) => {
       const matchesSearch =
         club.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         club.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory =
-        selectedCategory === 'All' || club.category === selectedCategory;
+        selectedCategory === "All" || club.category === selectedCategory;
       return matchesSearch && matchesCategory;
     });
   }, [searchQuery, selectedCategory]);
 
   const handleExploreClick = (clubId) => {
-    alert(`Exploring club ${clubId}`);
+    navigate(`/clubs/${clubId}`);
   };
 
   const handleInstagramClick = (url, e) => {
     e.stopPropagation();
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   };
 
   return (
     <div className="pt-20 bg-gray-50 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-
         {/* Header */}
         <div className="mb-10">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-2">Clubs</h1>
@@ -149,7 +158,7 @@ const ClubsPage = () => {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="w-full py-3 px-4 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-gray-700"
               >
-                {categories.map(category => (
+                {categories.map((category) => (
                   <option key={category} value={category}>
                     {category}
                   </option>
@@ -221,8 +230,12 @@ const ClubsPage = () => {
         {filteredClubs.length === 0 && (
           <div className="text-center py-16">
             <Search className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No clubs found</h3>
-            <p className="text-gray-600">Try adjusting your search or filters.</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+              No clubs found
+            </h3>
+            <p className="text-gray-600">
+              Try adjusting your search or filters.
+            </p>
           </div>
         )}
 
