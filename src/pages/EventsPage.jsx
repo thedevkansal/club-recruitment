@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Filter,
@@ -19,6 +20,7 @@ const EventsPage = () => {
   const [selectedTime, setSelectedTime] = useState("all");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [notifiedEvents, setNotifiedEvents] = useState(new Set());
+  const navigate = useNavigate();
 
   // Check if user is a club member
   const isClubMember = user?.role === "club_member" || user?.clubs?.length > 0;
@@ -160,13 +162,18 @@ const EventsPage = () => {
     });
   };
 
+  // In EventsPage.jsx, update the Apply Now button:
   const handleApplyNow = (eventId) => {
-    alert(`Applying for event ${eventId}`);
+    navigate(`/events/${eventId}`);
   };
 
   const handleAddEvent = () => {
     alert("Opening Add Event form...");
     // You can implement: navigate('/events/add') or setShowAddEventModal(true)
+  };
+  // Add this function in EventsPage.jsx:
+  const handleEventClick = (eventId) => {
+    navigate(`/events/${eventId}`);
   };
 
   return (
@@ -271,6 +278,7 @@ const EventsPage = () => {
               return (
                 <div
                   key={event.id}
+                  onClick={() => handleEventClick(event.id)}
                   className="bg-white rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 overflow-hidden cursor-pointer"
                 >
                   {/* Event Image */}
@@ -343,7 +351,10 @@ const EventsPage = () => {
 
                       {/* Apply Now Button */}
                       <button
-                        onClick={() => handleApplyNow(event.id)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // This prevents the card click when button is clicked
+                          handleApplyNow(event.id);
+                        }}
                         className="flex-1 flex items-center justify-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs"
                       >
                         <Send className="h-3 w-3 mr-1" />

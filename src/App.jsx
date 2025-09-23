@@ -15,6 +15,7 @@ import EventsPage from "./pages/EventsPage";
 import ProfilePage from "./pages/ProfilePage";
 import RegisterPage from "./pages/RegisterPage";
 import ClubDetailsPage from "./pages/ClubDetailsPage"; // Import the ClubDetailsPage
+import EventDetailsPage from "./pages/EventDetailsPage"; // Import the EventDetailsPage
 import { useAuth } from "./hooks/useAuth";
 
 function AppRoutes() {
@@ -78,6 +79,8 @@ function AppRoutes() {
       // Add this route in your App.jsx
       <Route path="/clubs/:clubId" element={<ClubDetailsPage />} />
       <Route path="/clubs" element={<ClubsPage />} />
+      // Add this route:
+      <Route path="/events/:eventId" element={<EventDetailsPage />} />
     </Routes>
   );
 }
