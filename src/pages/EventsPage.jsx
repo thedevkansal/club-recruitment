@@ -1,199 +1,395 @@
-import React, { useState } from 'react';
-import Card from '../components/ui/card';
-import Button from '../components/ui/button';
-import Input from '../components/ui/Input';
-import { 
-  Calendar, Clock, MapPin, Users, Search, Filter, 
-  ChevronLeft, ChevronRight, Grid, List
-} from 'lucide-react';
+import React, { useState, useMemo } from "react";
+import {
+  Search,
+  Filter,
+  Calendar,
+  MapPin,
+  Clock,
+  Bell,
+  BellRing,
+  Send,
+  Plus,
+} from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
 
 const EventsPage = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFilter, setSelectedFilter] = useState('All');
-  const [viewMode, setViewMode] = useState('grid');
+  const { user } = useAuth();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedClub, setSelectedClub] = useState("all");
+  const [selectedTime, setSelectedTime] = useState("all");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [notifiedEvents, setNotifiedEvents] = useState(new Set());
 
-  const filters = ['All', 'This Week', 'This Month', 'My Events', 'Popular'];
+  // Check if user is a club member
+  const isClubMember = user?.role === "club_member" || user?.clubs?.length > 0;
 
+  // Sample events data
   const events = [
     {
       id: 1,
-      title: 'Tech Talk: AI in Healthcare',
-      club: 'Tech Innovation Club',
-      date: '2025-09-25',
-      time: '6:00 PM',
-      location: 'Auditorium A',
-      attendees: 45,
-      maxAttendees: 100,
-      image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=300&fit=crop',
-      description: 'Explore how artificial intelligence is revolutionizing healthcare with industry experts.',
-      tags: ['Technology', 'AI', 'Healthcare'],
-      isRegistered: false,
-      isFeatured: true
+      title: "Tech Innovation Workshop",
+      date: "Sep 18",
+      time: "2:00 PM",
+      location: "Computer Lab A",
+      club: "Tech Club",
+      category: "Workshop",
+      image:
+        "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=300&h=160&fit=crop",
     },
     {
       id: 2,
-      title: 'Open Mic Night',
-      club: 'Music Harmony Society',
-      date: '2025-09-26',
-      time: '7:30 PM',
-      location: 'Student Center',
-      attendees: 32,
-      maxAttendees: 80,
-      image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop',
-      description: 'Showcase your musical talents or enjoy performances by fellow students.',
-      tags: ['Music', 'Performance', 'Entertainment'],
-      isRegistered: true,
-      isFeatured: false
+      title: "Music Society Concert",
+      date: "Sep 17",
+      time: "6:00 PM",
+      location: "Main Auditorium",
+      club: "Music Society",
+      category: "Concert",
+      image:
+        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=160&fit=crop",
     },
     {
       id: 3,
-      title: 'Sustainability Workshop',
-      club: 'Environmental Action',
-      date: '2025-09-28',
-      time: '3:00 PM',
-      location: 'Science Building Room 201',
-      attendees: 28,
-      maxAttendees: 50,
-      image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop',
-      description: 'Learn practical ways to reduce your environmental impact on campus.',
-      tags: ['Environment', 'Workshop', 'Sustainability'],
-      isRegistered: false,
-      isFeatured: false
-    }
+      title: "Startup Pitch Competition",
+      date: "Sep 16",
+      time: "10:00 AM",
+      location: "Conference Hall",
+      club: "Entrepreneurship Club",
+      category: "Competition",
+      image:
+        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=160&fit=crop",
+    },
+    {
+      id: 4,
+      title: "Art Exhibition Opening",
+      date: "Sep 15",
+      time: "11:00 AM",
+      location: "Gallery Room",
+      club: "Art Club",
+      category: "Exhibition",
+      image:
+        "https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=300&h=160&fit=crop",
+    },
+    {
+      id: 5,
+      title: "AI & Machine Learning Seminar",
+      date: "Sep 14",
+      time: "3:00 PM",
+      location: "Engineering Block",
+      club: "Tech Club",
+      category: "Seminar",
+      image:
+        "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&h=160&fit=crop",
+    },
+    {
+      id: 6,
+      title: "Dance Battle Championship",
+      date: "Sep 13",
+      time: "7:00 PM",
+      location: "Main Stage",
+      club: "Dance Club",
+      category: "Competition",
+      image:
+        "https://images.unsplash.com/photo-1547036967-23d11aacaee0?w=300&h=160&fit=crop",
+    },
+    {
+      id: 7,
+      title: "Photography Workshop",
+      date: "Sep 12",
+      time: "1:00 PM",
+      location: "Media Room",
+      club: "Photography Club",
+      category: "Workshop",
+      image:
+        "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=300&h=160&fit=crop",
+    },
+    {
+      id: 8,
+      title: "Coding Bootcamp",
+      date: "Sep 11",
+      time: "9:00 AM",
+      location: "Computer Lab B",
+      club: "Programming Society",
+      category: "Workshop",
+      image:
+        "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=300&h=160&fit=crop",
+    },
   ];
 
+  // Filter options
+  const clubs = ["all", ...new Set(events.map((event) => event.club))];
+  const categories = [
+    "all",
+    "Workshop",
+    "Concert",
+    "Competition",
+    "Exhibition",
+    "Seminar",
+    "Conference",
+  ];
+  const timeFilters = [
+    { value: "all", label: "All Time" },
+    { value: "today", label: "Today" },
+    { value: "week", label: "This Week" },
+    { value: "month", label: "This Month" },
+  ];
+
+  // Filter events
+  const filteredEvents = useMemo(() => {
+    return events.filter((event) => {
+      const matchesSearch =
+        event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        event.club.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesClub = selectedClub === "all" || event.club === selectedClub;
+      const matchesCategory =
+        selectedCategory === "all" || event.category === selectedCategory;
+      const matchesTime = selectedTime === "all";
+
+      return matchesSearch && matchesClub && matchesCategory && matchesTime;
+    });
+  }, [searchQuery, selectedClub, selectedTime, selectedCategory]);
+
+  const handleNotifyMe = (eventId) => {
+    setNotifiedEvents((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(eventId)) {
+        newSet.delete(eventId);
+      } else {
+        newSet.add(eventId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleApplyNow = (eventId) => {
+    alert(`Applying for event ${eventId}`);
+  };
+
+  const handleAddEvent = () => {
+    alert("Opening Add Event form...");
+    // You can implement: navigate('/events/add') or setShowAddEventModal(true)
+  };
+
   return (
-    <div className="pt-24"> 
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Campus Events</h1>
-          <p className="text-gray-600 mt-1">Discover exciting events happening around campus</p>
-        </div>
-        
-        <div className="flex items-center space-x-3">
-          <Button variant="outline" size="small">
-            <Calendar className="h-4 w-4 mr-2" />
-            Calendar View
-          </Button>
-          
-          <div className="flex items-center bg-white border border-gray-300 rounded-lg">
+    <div className="pt-24">
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header with Add Event Button */}
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">Events</h1>
+              <p className="text-gray-600">
+                Discover and join exciting events happening around campus
+              </p>
+            </div>
+
+            {/* Add Event Button - Visible for demo purposes */}
             <button
-              onClick={() => setViewMode('grid')}
-              className={`p-2 ${viewMode === 'grid' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-400'}`}
+              onClick={handleAddEvent}
+              className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors shadow-lg hover:shadow-xl"
             >
-              <Grid className="h-5 w-5" />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-2 ${viewMode === 'list' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-400'}`}
-            >
-              <List className="h-5 w-5" />
+              <Plus className="h-5 w-5 mr-2" />
+              Add Event
             </button>
           </div>
-        </div>
-      </div>
 
-      {/* Search and Filters */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1">
-          <Input
-            icon={Search}
-            placeholder="Search events, clubs, or keywords..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <Filter className="h-5 w-5 text-gray-400" />
-          <div className="flex flex-wrap gap-2">
-            {filters.map((filter) => (
+          {/* Search and Filters */}
+          <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <div className="flex flex-col lg:flex-row gap-4 items-end">
+              {/* Search Bar */}
+              <div className="flex-1 max-w-md">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Search Events
+                </label>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search events..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-sm"
+                  />
+                </div>
+              </div>
+
+              {/* Club Filter */}
+              <div className="min-w-[160px]">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Club
+                </label>
+                <select
+                  value={selectedClub}
+                  onChange={(e) => setSelectedClub(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-sm"
+                >
+                  {clubs.map((club) => (
+                    <option key={club} value={club}>
+                      {club === "all" ? "All Clubs" : club}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Category Filter */}
+              <div className="min-w-[140px]">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Category
+                </label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-sm"
+                >
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category === "all" ? "All Categories" : category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Time Filter */}
+              <div className="min-w-[130px]">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Time
+                </label>
+                <select
+                  value={selectedTime}
+                  onChange={(e) => setSelectedTime(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-sm"
+                >
+                  {timeFilters.map((filter) => (
+                    <option key={filter.value} value={filter.value}>
+                      {filter.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Clear Filters */}
               <button
-                key={filter}
-                onClick={() => setSelectedFilter(filter)}
-                className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                  selectedFilter === filter
-                    ? 'bg-indigo-100 text-indigo-700'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
+                onClick={() => {
+                  setSearchQuery("");
+                  setSelectedClub("all");
+                  setSelectedTime("all");
+                  setSelectedCategory("all");
+                }}
+                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm"
               >
-                {filter}
+                Clear All
               </button>
-            ))}
+            </div>
           </div>
+
+          {/* Events Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filteredEvents.map((event) => {
+              const isNotified = notifiedEvents.has(event.id);
+
+              return (
+                <div
+                  key={event.id}
+                  className="bg-white rounded-xl shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200 overflow-hidden cursor-pointer"
+                >
+                  {/* Event Image */}
+                  <div className="relative">
+                    <img
+                      src={event.image}
+                      alt={event.title}
+                      className="w-full h-36 object-cover"
+                    />
+
+                    {/* Category Badge */}
+                    <div className="absolute top-3 right-3">
+                      <span className="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">
+                        {event.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Event Details */}
+                  <div className="p-4">
+                    {/* Date */}
+                    <div className="flex items-center text-purple-600 text-sm font-medium mb-2">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      <span>{event.date}</span>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="font-semibold text-gray-900 mb-2 text-sm leading-tight">
+                      {event.title}
+                    </h3>
+
+                    {/* Club Info */}
+                    <p className="text-xs text-gray-500 mb-3">{event.club}</p>
+
+                    {/* Time and Location */}
+                    <div className="space-y-1 mb-4">
+                      <div className="flex items-center text-gray-600 text-xs">
+                        <Clock className="h-3 w-3 mr-1" />
+                        <span>{event.time}</span>
+                      </div>
+                      <div className="flex items-center text-gray-600 text-xs">
+                        <MapPin className="h-3 w-3 mr-1" />
+                        <span>{event.location}</span>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex space-x-2">
+                      {/* Notify Me Button */}
+                      <button
+                        onClick={() => handleNotifyMe(event.id)}
+                        className={`flex-1 flex items-center justify-center px-3 py-2 rounded-lg transition-colors text-xs ${
+                          isNotified
+                            ? "bg-green-500 text-white hover:bg-green-600"
+                            : "border border-gray-300 text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        {isNotified ? (
+                          <>
+                            <BellRing className="h-3 w-3 mr-1" />
+                            Notification On
+                          </>
+                        ) : (
+                          <>
+                            <Bell className="h-3 w-3 mr-1" />
+                            Notify Me
+                          </>
+                        )}
+                      </button>
+
+                      {/* Apply Now Button */}
+                      <button
+                        onClick={() => handleApplyNow(event.id)}
+                        className="flex-1 flex items-center justify-center px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-xs"
+                      >
+                        <Send className="h-3 w-3 mr-1" />
+                        Apply Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* No Results */}
+          {filteredEvents.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-400 mb-4">
+                <Filter className="h-12 w-12 mx-auto" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No events found
+              </h3>
+              <p className="text-gray-500">
+                Try adjusting your search or filter criteria
+              </p>
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Events Grid */}
-      <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
-        {events.map((event) => (
-          <Card key={event.id} hover className="overflow-hidden">
-            <div className="relative">
-              <img
-                src={event.image}
-                alt={event.title}
-                className="w-full h-48 object-cover"
-              />
-              {event.isFeatured && (
-                <div className="absolute top-4 right-4 bg-gradient-to-r from-amber-400 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                  Featured
-                </div>
-              )}
-              {event.isRegistered && (
-                <div className="absolute top-4 left-4 bg-gradient-to-r from-emerald-400 to-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                  Registered
-                </div>
-              )}
-            </div>
-            
-            <div className="p-6">
-              <div className="flex items-start justify-between mb-3">
-                <h3 className="text-xl font-semibold text-gray-900">{event.title}</h3>
-              </div>
-              
-              <p className="text-sm text-indigo-600 font-medium mb-2">{event.club}</p>
-              <p className="text-gray-600 mb-4">{event.description}</p>
-              
-              <div className="space-y-2 mb-4 text-sm text-gray-600">
-                <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  {event.date}
-                </div>
-                <div className="flex items-center">
-                  <Clock className="h-4 w-4 mr-2" />
-                  {event.time}
-                </div>
-                <div className="flex items-center">
-                  <MapPin className="h-4 w-4 mr-2" />
-                  {event.location}
-                </div>
-                <div className="flex items-center">
-                  <Users className="h-4 w-4 mr-2" />
-                  {event.attendees}/{event.maxAttendees} attending
-                </div>
-              </div>
-              
-              <div className="flex flex-wrap gap-2 mb-4">
-                {event.tags.map((tag, index) => (
-                  <span 
-                    key={index} 
-                    className="px-2 py-1 bg-indigo-50 text-indigo-700 text-xs rounded-full"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              
-              <Button size="small" className="w-full" variant={event.isRegistered ? 'secondary' : 'primary'}>
-                {event.isRegistered ? 'Registered' : 'Register'}
-              </Button>
-            </div>
-          </Card>
-        ))}
-      </div>
-    </div>
     </div>
   );
 };
