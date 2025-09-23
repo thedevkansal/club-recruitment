@@ -24,6 +24,7 @@ const categoryColors = {
  */
 export default function ClubsPage() {
     return (
+        <div className="pt-24"> 
         <div className="p-4 sm:p-8">
             <h1 className="text-3xl font-bold mb-2">Discover Clubs</h1>
             <p className="text-gray-600 mb-6">Find your passion and connect with like-minded students.</p>
@@ -54,6 +55,7 @@ export default function ClubsPage() {
                     </div>
                 ))}
             </div>
+        </div>
         </div>
     );
 }

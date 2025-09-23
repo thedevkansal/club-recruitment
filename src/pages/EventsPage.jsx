@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Card from '../components/ui/Card';
+import Card from '../components/ui/card';
 import Button from '../components/ui/button';
 import Input from '../components/ui/Input';
 import { 
@@ -63,6 +63,7 @@ const EventsPage = () => {
   ];
 
   return (
+    <div className="pt-24"> 
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -192,6 +193,7 @@ const EventsPage = () => {
           </Card>
         ))}
       </div>
+    </div>
     </div>
   );
 };

@@ -69,6 +69,7 @@ const HomePage = () => {
   ];
 
   return (
+    <div className="pt-24"> 
     <div className="space-y-8">
       {/* Welcome Section */}
       <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-8 text-white">
@@ -169,6 +170,7 @@ const HomePage = () => {
           ))}
         </div>
       </div>
+    </div>
     </div>
   );
 };
