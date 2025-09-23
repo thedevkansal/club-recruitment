@@ -170,48 +170,33 @@ const EventsPage = () => {
   };
 
   return (
-    <div className="pt-24">
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header with Add Event Button */}
-          <div className="mb-8 flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Events</h1>
-              <p className="text-gray-600">
-                Discover and join exciting events happening around campus
-              </p>
-            </div>
-
-            {/* Add Event Button - Visible for demo purposes */}
-            <button
-              onClick={handleAddEvent}
-              className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors shadow-lg hover:shadow-xl"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              Add Event
-            </button>
-          </div>
+    <div className="pt-20 bg-gray-50 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-10">
+          <h1 className="text-4xl font-extrabold text-gray-900 mb-2">Events</h1>
+          <p className="text-lg text-gray-600">
+            Discover and join exciting events happening around campus.
+          </p>
 
           {/* Search and Filters */}
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <div className="bg-white rounded-2xl shadow p-6 mb-10">
             <div className="flex flex-col lg:flex-row gap-4 items-end">
               {/* Search Bar */}
-              <div className="flex-1 max-w-md">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Search Events
-                </label>
+              <div className="flex-1 w-full lg:w-auto max-w-sm">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <input
                     type="text"
                     placeholder="Search events..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none text-sm"
+                    className="w-full pl-12 pr-5 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
               </div>
-
+              Search Events
+              {/* ...existing code... */}
               {/* Club Filter */}
               <div className="min-w-[160px]">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -229,7 +214,6 @@ const EventsPage = () => {
                   ))}
                 </select>
               </div>
-
               {/* Category Filter */}
               <div className="min-w-[140px]">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -247,7 +231,6 @@ const EventsPage = () => {
                   ))}
                 </select>
               </div>
-
               {/* Time Filter */}
               <div className="min-w-[130px]">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -265,7 +248,6 @@ const EventsPage = () => {
                   ))}
                 </select>
               </div>
-
               {/* Clear Filters */}
               <button
                 onClick={() => {
