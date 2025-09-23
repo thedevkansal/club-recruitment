@@ -31,3 +31,36 @@ body {
 }
 
 /* Remove your old button styles — Tailwind handles buttons */
+
+/* Global Input Text Fix - Add this to src/index.css */
+
+/* Ensure all input and select elements have dark text */
+input, select, textarea {
+  color: #1f2937 !important; /* gray-800 */
+}
+
+/* Placeholder text */
+input::placeholder, select::placeholder, textarea::placeholder {
+  color: #9ca3af !important; /* gray-400 */
+}
+
+/* Option elements in selects */
+option {
+  color: #1f2937 !important; /* gray-800 */
+  background-color: white !important;
+}
+
+/* Focus states */
+input:focus, select:focus, textarea:focus {
+  color: #1f2937 !important; /* gray-800 */
+}
+
+/* Autofill states */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-text-fill-color: #1f2937 !important;
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+}
+
