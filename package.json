@@ -10,22 +10,23 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "clsx": "^2.0.0",
+    "date-fns": "^4.1.0",
+    "lucide-react": "^0.294.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.20.1",
-    "tailwind-merge": "^2.2.0",
-    "clsx": "^2.0.0",
-    "lucide-react": "^0.294.0"
+    "tailwind-merge": "^2.2.0"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0-alpha.5",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.0.8",
-    "@tailwindcss/vite": "^4.0.0-alpha.5",
     "eslint": "^8.55.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5"
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "vite": "^5.0.8"
   }
 }
