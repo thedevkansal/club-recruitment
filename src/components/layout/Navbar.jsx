@@ -8,7 +8,8 @@ import {
   Bell, 
   LogOut,
   GraduationCap,
-  User
+  User,
+  Plus
 } from 'lucide-react';
 
 const Navbar = () => {
@@ -40,11 +41,20 @@ const Navbar = () => {
 
   const isActive = (path) => location.pathname === path;
 
-  const navItems = [
+  // Base navigation items
+  const baseNavItems = [
     { path: '/', label: 'Home', icon: Home },
     { path: '/clubs', label: 'Clubs', icon: Users },
     { path: '/events', label: 'Events', icon: Calendar }
   ];
+
+  // Add Create Club for club admins only (with simple styling)
+  const navItems = user && (user.role === 'club_admin' || user.role === 'super_admin') 
+    ? [
+        ...baseNavItems,
+        { path: '/create-club', label: 'Create Club', icon: Plus }
+      ]
+    : baseNavItems;
 
   const handleLogout = () => {
     logout();
@@ -71,7 +81,7 @@ const Navbar = () => {
               </span>
             </Link>
 
-            {/* Navigation Items */}
+            {/* Navigation Items - Desktop */}
             <div className="hidden md:flex items-center space-x-1 bg-gray-50 rounded-full p-1">
               {navItems.map(({ path, label, icon: Icon }) => (
                 <Link
@@ -91,7 +101,7 @@ const Navbar = () => {
 
             {/* Mobile Navigation */}
             <div className="md:hidden flex items-center space-x-1 bg-gray-50 rounded-full p-1">
-              {navItems.map(({ path, icon: Icon }) => (
+              {navItems.map(({ path, icon: Icon, label }) => (
                 <Link
                   key={path}
                   to={path}
@@ -100,7 +110,7 @@ const Navbar = () => {
                       ? 'bg-white text-indigo-600 shadow-md'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-white hover:shadow-sm'
                   }`}
-                  title={navItems.find(item => item.path === path)?.label}
+                  title={label}
                 >
                   <Icon className="h-4 w-4" />
                 </Link>

@@ -16,56 +16,91 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored auth token
-    const token = localStorage.getItem('authToken');
-    const userData = localStorage.getItem('userData');
+    // Check for stored auth token - USING CORRECT KEYS
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
     
     if (token && userData) {
-      setUser(JSON.parse(userData));
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser);
       setIsAuthenticated(true);
     }
     setLoading(false);
   }, []);
 
+  // Add storage event listener for real-time updates
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('user');
+      
+      if (token && userData) {
+        const parsedUser = JSON.parse(userData);
+        setUser(parsedUser);
+        setIsAuthenticated(true);
+      } else {
+        setUser(null);
+        setIsAuthenticated(false);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for manual localStorage updates
+    const originalSetItem = localStorage.setItem;
+    localStorage.setItem = function(key, value) {
+      originalSetItem.apply(this, arguments);
+      if (key === 'user' || key === 'token') {
+        handleStorageChange();
+      }
+    };
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      localStorage.setItem = originalSetItem;
+    };
+  }, []);
+
   const login = async (email, password) => {
     try {
-      // Simulate API call with realistic delay
-      const response = await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (email && password) {
-            resolve({
-              user: {
-                id: 1,
-                name: 'John Doe',
-                email: email,
-                year: '3rd Year',
-                department: 'Computer Science',
-                avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face',
-                joinedClubs: ['Tech Club', 'Music Society'],
-                eventsAttended: 12,
-                memberSince: '2023-08-15'
-              },
-              token: 'fake-jwt-token-' + Date.now()
-            });
-          } else {
-            reject(new Error('Invalid credentials'));
-          }
-        }, 1200);
+      console.log('🔐 AuthContext login called');
+      
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
       });
 
-      localStorage.setItem('authToken', response.token);
-      localStorage.setItem('userData', JSON.stringify(response.user));
-      setUser(response.user);
-      setIsAuthenticated(true);
-      return { success: true };
+      const data = await response.json();
+      console.log('📥 Login response:', data);
+
+      if (data.status === 'success') {
+        // Store with correct keys
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('user', JSON.stringify(data.data.user));
+        
+        setUser(data.data.user);
+        setIsAuthenticated(true);
+        
+        return { success: true };
+      } else {
+        return { success: false, error: data.message };
+      }
     } catch (error) {
+      console.error('Login error:', error);
       return { success: false, error: error.message };
     }
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    // Also remove old keys just in case
     localStorage.removeItem('authToken');
     localStorage.removeItem('userData');
+    
     setUser(null);
     setIsAuthenticated(false);
   };
@@ -73,7 +108,7 @@ export const AuthProvider = ({ children }) => {
   const updateProfile = (updatedData) => {
     const updatedUser = { ...user, ...updatedData };
     setUser(updatedUser);
-    localStorage.setItem('userData', JSON.stringify(updatedUser));
+    localStorage.setItem('user', JSON.stringify(updatedUser));
   };
 
   const value = {

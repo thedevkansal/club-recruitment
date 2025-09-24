@@ -16,6 +16,7 @@ import ProfilePage from "./pages/ProfilePage";
 import RegisterPage from "./pages/RegisterPage";
 import ClubDetailsPage from "./pages/ClubDetailsPage"; // Import the ClubDetailsPage
 import EventDetailsPage from "./pages/EventDetailsPage"; // Import the EventDetailsPage
+import CreateClub from "./pages/CreateClub";
 import { useAuth } from "./hooks/useAuth";
 import { DarkModeProvider } from "./contexts/DarkModeContext";
 
@@ -82,6 +83,7 @@ function AppRoutes() {
       <Route path="/clubs" element={<ClubsPage />} />
       // Add this route:
       <Route path="/events/:eventId" element={<EventDetailsPage />} />
+      <Route path="/create-club" element={<CreateClub />} />
     </Routes>
   );
 }
