@@ -17,6 +17,7 @@ import RegisterPage from "./pages/RegisterPage";
 import ClubDetailsPage from "./pages/ClubDetailsPage"; // Import the ClubDetailsPage
 import EventDetailsPage from "./pages/EventDetailsPage"; // Import the EventDetailsPage
 import { useAuth } from "./hooks/useAuth";
+import { DarkModeProvider } from "./contexts/DarkModeContext";
 
 function AppRoutes() {
   const { isAuthenticated } = useAuth();
@@ -87,15 +88,17 @@ function AppRoutes() {
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <Router>
-          <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-            <AppRoutes />
-          </div>
-        </Router>
-      </AuthProvider>
-    </ThemeProvider>
+    <DarkModeProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <Router>
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+              <AppRoutes />
+            </div>
+          </Router>
+        </AuthProvider>
+      </ThemeProvider>
+    </DarkModeProvider>
   );
 }
 

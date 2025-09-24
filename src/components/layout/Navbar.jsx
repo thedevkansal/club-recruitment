@@ -107,7 +107,7 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* SIMPLIFIED Right Section */}
+            {/* Right Section */}
             <div className="flex items-center space-x-3">
               
               {/* Notifications */}
@@ -152,7 +152,7 @@ const Navbar = () => {
                 )}
               </div>
 
-              {/* SIMPLIFIED Profile Icon - Links to Profile Page */}
+              {/* Profile Icon */}
               <Link
                 to="/profile"
                 className="p-1 hover:bg-gray-50 rounded-full transition-colors duration-200 group"
@@ -171,7 +171,7 @@ const Navbar = () => {
                 </div>
               </Link>
 
-              {/* SIMPLIFIED Sign Out Icon */}
+              {/* Sign Out Icon */}
               <button
                 onClick={handleLogout}
                 className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors duration-200"
